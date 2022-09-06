@@ -3,7 +3,7 @@ from recurdyn import *
 # from recurdyn import MTT2D
 # from recurdyn import FFlex
 # from recurdyn import RFlex
-# from recurdyn import Tire
+from recurdyn import Tire
 import numpy as np
 import DataProcessing as DP
 import glob
@@ -84,6 +84,8 @@ def Import(importfile: str):
     model_document.FileImport(importfile)
 
 def ExportSolverFiles(OutputFolderName: str, OutputFileName: str, EndTime: int = 1, NumSteps: int = 101, PlotMultiplierStepFactor: int = 1):
+    model_document=application.ActiveModelDocument
+    model=model_document.Model
     modelPath = model_document.GetPath(PathType.WorkingFolder)
     print(f"{modelPath}{OutputFolderName}\\{OutputFileName}")
     DP.CreateDir(f"{modelPath}{OutputFolderName}\\{OutputFileName}")
@@ -106,33 +108,38 @@ def ExportSolverFiles(OutputFolderName: str, OutputFileName: str, EndTime: int =
     rss.write(RSScontents)
     rss.close()
 
-def WriteBatch(SolverFilesFolderName: str):
+def WriteBatch(SolverFilesFolderName: str, parallelBatches: 1):
     global rdSolverDir
     application.ClearMessage()
+    model_document=application.ActiveModelDocument
+    model=model_document.Model
     modelPath = model_document.GetPath(PathType.WorkingFolder)
-    BatchFileName = f"{SolverFilesFolderName}.bat"
-    bat = open(f"{modelPath}{SolverFilesFolderName}\\{BatchFileName}", 'w')
     RMDlist = glob.glob(f"{modelPath}{SolverFilesFolderName}\\**\\*.rmd", recursive=True)
-    for rmdName in RMDlist:
-        solverfilename = os.path.basename(rmdName).split('.')[:-1]
-        if len(os.path.basename(rmdName).split('.')) > 2:
-            solverfilename = '.'.join(os.path.basename(rmdName).split('.')[:-1])
-        else:
-            solverfilename = ''.join(solverfilename)
-        BATcontent = []
-        BATcontent.append(modelPath[:2])  # Drive Name
-        BATcontent.append(f"cd {os.path.dirname(rmdName)}")  # cd RMD path
-        BATcontent.append(f"{rdSolverDir} {solverfilename} {solverfilename}")  #
-        bat.writelines(line + "\n" for line in BATcontent)
-    bat.close()
-    application.PrintMessage(f"Created batch executable {modelPath}{SolverFilesFolderName}\\{BatchFileName}")
+    for i in range(parallelBatches):
+        BatchFileName = f"{SolverFilesFolderName}_{i + 1}.bat"
+        interval = int(len(RMDlist) / parallelBatches)
+        bat = open(f"{modelPath}{SolverFilesFolderName}\\{BatchFileName}", 'w')
+        for rmdName in RMDlist[i * interval:(i + 1) * interval]:
+            solverfilename = os.path.basename(rmdName).split('.')[:-1]
+            if len(os.path.basename(rmdName).split('.')) > 2:
+                solverfilename = '.'.join(os.path.basename(rmdName).split('.')[:-1])
+            else:
+                solverfilename = ''.join(solverfilename)
+            BATcontent = []
+            BATcontent.append(modelPath[:2])  # Drive Name
+            BATcontent.append(f"cd {os.path.dirname(rmdName)}")  # cd RMD path
+            BATcontent.append(f"{rdSolverDir} {solverfilename} {solverfilename}")  #
+            bat.writelines(line + "\n" for line in BATcontent)
+        bat.close()
+        application.PrintMessage(f"Created batch executable {modelPath}{SolverFilesFolderName}\\{BatchFileName}")
 
 def RunBatch(SolverFilesFolderName: str):
     modelPath = model_document.GetPath(PathType.WorkingFolder)
-    BatchFileDir = f"{modelPath}{SolverFilesFolderName}\\{SolverFilesFolderName}.bat"
-    print(f"Running {BatchFileDir}...")
+    BatchFiles = glob.glob(f"{modelPath}{SolverFilesFolderName}\\*.bat")
     StartTime = time.time()
-    subprocess.run(BatchFileDir, creationflags=subprocess.CREATE_NEW_CONSOLE)
+    for batchfile in BatchFiles:
+        print(f"Running {batchfile}...")
+        subprocess.run(batchfile, creationflags=subprocess.CREATE_NEW_CONSOLE)
     EndTime = time.time()
     Elapsed = EndTime - StartTime
     Hr, Min, Sec = DP.Sec2Time(Elapsed)
@@ -157,66 +164,31 @@ def RPLT2CSV(SolverFilesAbsPath: str):
         CSVpath = f"{CSVExportDir}\\{rpltname}.csv"
         plot_document.ExportData(CSVpath, DataExportTargets, True, False, 8)
         application.ClosePlotDocument(plot_document)
-        application.PrintMessage(f"Data exported {CSVpath} ({idx_rplt}/{len(RPLTlist)})")
-        print(f"Data exported {CSVpath} ({idx_rplt}/{len(RPLTlist)})")
+        application.PrintMessage(f"Data exported {CSVpath} ({idx_rplt + 1}/{len(RPLTlist)})")
+        print(f"Data exported {CSVpath} ({idx_rplt + 1}/{len(RPLTlist)})")
     EndTime = time.time()
     Elapsed = EndTime - StartTime
     Hr, Min, Sec = DP.Sec2Time(Elapsed)
     print(f"Finished, data export time: {Hr}hr {Min}min {Sec:.2f}sec")
 
 def LoopRun(SolverFilesFolderName: str, EndTime: int = 1, NumSteps: int = 101, PlotMultiplierStepFactor: int = 1):
-    modelPath = model_document.GetPath(PathType.WorkingFolder)
     
-    # DP.PlotTemplate(15)
-    # fig,ax=plt.subplots(1,1,figsize=(6,5))
-    # ax.plot(Samples[:,0],Samples[:,1],linestyle='none',marker='x',markersize=4,markerfacecolor='black',markeredgecolor='black')
-    # ax.set(xlim=(1,2),xlabel='$l_1$',ylim=(1,2),ylabel='$l_2$')
-    # fig.tight_layout()
-    # plt.show()
-    
-    Counter = 1
-    Svx = np.linspace(0.5, 1.5, 11, endpoint=True)
-    Svy = np.linspace(0.5, 1.5, 11, endpoint=True)
-    for svx in Svx:
-        for svy in Svy:
-            ChangePVvalue('PV_Scale_VX', svx)
-            ChangePVvalue('PV_Scale_VY', svy)
-            ExportSolverFiles(SolverFilesFolderName, f"Train_{Counter:04d}", EndTime=EndTime, NumSteps=NumSteps)
-            Counter += 1
-
-    Counter = 1
-    Svx = np.linspace(0.5, 1.5, 16, endpoint=True)
-    Svy = np.linspace(0.5, 1.5, 16, endpoint=True)
-    for svx in Svx:
-        for svy in Svy:
-            ChangePVvalue('PV_Scale_VX', svx)
-            ChangePVvalue('PV_Scale_VY', svy)
-            ExportSolverFiles(SolverFilesFolderName, f"Train2_{Counter:04d}", EndTime=EndTime, NumSteps=NumSteps)
+    Counter = 0
+    Models = ["011","012","015",]
+    Roads = [f"Ground.GRoad_Uneven_R1",f"Ground.GRoad_Uneven_R2",f"Ground.GRoad_Uneven_R4",f"Ground.GRoad_Uneven_R8",f"Ground.GRoad_Uneven_R16"]
+    for rdyn in Models:
+        model_document=application.OpenModelDocument(f"D:\Research\Trailer2022\Ground_Model\\Trailer_{rdyn}.rdyn")
+        modelPath = model_document.GetPath(PathType.WorkingFolder)
+        model=model_document.Model
+        EndTime=IParametricValue(model.GetEntity("PV_EndTime")).Value
+        NumSteps=IParametricValue(model.GetEntity("PV_NumSteps")).Value
+        for roadName in Roads:
+            for i in range(40):
+                Tire.ITireGroupGeneric(model.GetEntity(f"GTireGroup{i+1}")).Road=roadName
+            ExportSolverFiles(SolverFilesFolderName, f"Case{rdyn}_{roadName.split('_')[-1]}", EndTime=EndTime, NumSteps=NumSteps)
             Counter += 1
     
-    Counter = 1
-    Samples = DP.LHCSampler(100, 2, seed=777)
-    Samples[:, 0] += 0.5
-    Samples[:, 1] += 0.5
-    for sample in Samples:
-        svx, svy = sample
-        ChangePVvalue('PV_Scale_VX', svx)
-        ChangePVvalue('PV_Scale_VY', svy)
-        ExportSolverFiles(SolverFilesFolderName, f"Valid_{Counter:04d}", EndTime=EndTime, NumSteps=NumSteps)
-        Counter += 1
-    
-    Counter = 1
-    Samples = DP.LHCSampler(300, 2, seed=777)
-    Samples[:, 0] += 0.5
-    Samples[:, 1] += 0.5
-    for sample in Samples:
-        svx, svy = sample
-        ChangePVvalue('PV_Scale_VX', svx)
-        ChangePVvalue('PV_Scale_VY', svy)
-        ExportSolverFiles(SolverFilesFolderName, f"Test_{Counter:04d}", EndTime=EndTime, NumSteps=NumSteps)
-        Counter += 1
-    
-    WriteBatch(SolverFilesFolderName)
+    WriteBatch(SolverFilesFolderName, 4)
     RunBatch(SolverFilesFolderName)
     RPLT2CSV(f"{modelPath}{SolverFilesFolderName}")
 
@@ -348,25 +320,61 @@ def CreateExpressionLoop():
         model_document.Analysis(AnalysisMode.Dynamic)
         RPLT2CSV(f"{dir}\\{name}")
 
-
-
 def ScenarioLoop():
     application.ClearMessage()
 
+def CreateGRoadWith1DSplineData(CaseNo):
+    application.ClearMessage()
+    model_document = application.ActiveModelDocument
+    model = model_document.Model
+    ground = IBody(model.GetEntity("Ground"))
+    
+    Profiles = os.walk(f"C:\\Users\LHB-MSLab\Documents\GitHub\KAERI-2022\RoadTest_2022\Case0{CaseNo}")
+    for dir, subdirs, files in Profiles:
+        if files and "R=" in dir:
+            Roughness = dir.split('\\')[-1].replace('=', '').split('.')[0]
+            multiCurve = []
+            for idx_file, file in enumerate(files):
+                RoadOutline = ground.CreateOutlineGeometryWithFile(f"Outline_Uneven{idx_file + 1}_{Roughness}", f"{dir}\\{file}")
+                multiCurve.append(RoadOutline)
+            
+            print(f"Surface_Uneven_{Roughness}")
+            RoadProfileSheet = IGeometrySheet(ground.CreateSplineSurfaceGeometry(f"Surface_Uneven_{Roughness}", multiCurve))
+            
+            data_raw = pd.read_csv(f"{dir}\\{file}")
+            NumFaces = data_raw.shape[0] - 1
+            FaceList = []
+            for i in range(NumFaces):
+                FaceList.append(ground.GetEntity(f"Surface_Uneven_{Roughness}.Face{NumFaces - i}"))
+            
+            roadRefFrame = IReferenceFrame(model_document.CreateReferenceFrame())
+            roadRefFrame.SetMasterPoint(AxisType.PlusZ, 0, 0, 1)
+            roadRefFrame.SetSlavePoint(AxisType.PlusX, 1, 0, 0)
+            ground.CreateGRoadWithFace(f"GRoad_Uneven_{Roughness}", FaceList, roadRefFrame, f"GRoad_Uneven_Case0{CaseNo}_{Roughness}.rdf")
 
 if __name__ == '__main__':
     application, model_document, plot_document, model = initialize()
     
     #
-    modelPath = model_document.GetPath(PathType.WorkingFolder)
-    LoopRun(f"220816_DPCNN", EndTime=IParametricValue(model.GetEntity("PV_EndTime")).Value, NumSteps=IParametricValue(model.GetEntity("PV_NumSteps")).Value)
-    # RPLT2CSV("D:\Research\DNN_TransientInput\DoublePendulumContact\\220814_LHCValidSet_BE")
-    # RPLT2CSV(f"C:\\Users\LHB-MSLab\Documents\GitHub\KRISO-DNN\EDEM_RecurDyn_CoSim_211107\RPLT files")
+    #
+    # modelPath = model_document.GetPath(PathType.WorkingFolder)
+    LoopRun(f"220906_RoadTest")
+    # RPLT2CSV(f"D:\Research\Trailer2022\Ground_Model\\220823_Test")
     # CreateExpressionLoop()
     # CreateSplineExpressions()
     # SingleRun("220719_LMM_SmallKC",EndTime=299,NumSteps=149500)
     # ExportSensorDisplacements()
     # CreateExpressionLoop()
+    # CreateGRoadWith1DSplineData(15)
     #
     
     dispose()
+    
+    """
+    GTireGroup에 GRoad 설정하는법
+    for i in range(40):
+        tireGroup=Tire.ITireGroupGeneric(model.GetEntity(f"GTireGroup{i+1}")).Road="Ground.GRoad_Uneven_R1"
+    
+    사용 코어 수 변경
+    application.Settings.CoreNumber=8
+    """
