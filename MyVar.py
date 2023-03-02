@@ -1,6 +1,23 @@
-Key = 'trailer2022_ground'
+Key = 'trailer2022_to_kaeri'
 
 # # Trailer2022
+if Key == 'trailer2022_to_kaeri':
+    DataExportTargets = ["TIME",
+                         # Trunnion sensor
+                         "Bodies/Sensor_20/Acc_TX",
+                         "Bodies/Sensor_20/Acc_TY",
+                         "Bodies/Sensor_20/Acc_TZ",
+                         "Bodies/Sensor_51/Acc_TX",
+                         "Bodies/Sensor_51/Acc_TY",
+                         "Bodies/Sensor_51/Acc_TZ",
+                         "Bodies/Sensor_52/Acc_TX",
+                         "Bodies/Sensor_52/Acc_TY",
+                         "Bodies/Sensor_52/Acc_TZ",
+                         "Bodies/Sensor_53/Acc_TX",
+                         "Bodies/Sensor_53/Acc_TY",
+                         "Bodies/Sensor_53/Acc_TZ",
+                         ]
+
 if Key == 'trailer2022_sea':
     DataExportTargets = ["TIME",
                          "Force/Translational Force/Translational_LMM/FX_Translational",
@@ -22,8 +39,8 @@ if Key == 'trailer2022_sea':
                          ]
 if Key == 'trailer2022_ground':
     DataExportTargets = ["TIME",
-                         "Expression/Ex_Scale_VX",
-                         "Expression/Ex_Scale_VY",
+                         "Expression/Ex_Scale_VX/Value",
+                         "Expression/Ex_Scale_VY/Value",
                         # Input
                          "Force/Translational Force/Translational_Driving/FX_Translational",
                          "Force/Translational Force/Translational_Driving/FY_Translational",
@@ -87,12 +104,12 @@ if Key == 'trailer2022_ground':
                          # "Force/Translational Spring Damper/Spring_Sus@Sus_4_R4/DEFL_TSDA",
                          
                          # Sensor_20 relative displacements
-                         "Expression/Ex_DX_Sensor_20",
-                         "Expression/Ex_DY_Sensor_20",
-                         "Expression/Ex_DZ_Sensor_20",
-                         "Expression/Ex_ROLL_Sensor_20",
-                         "Expression/Ex_PITCH_Sensor_20",
-                         "Expression/Ex_YAW_Sensor_20",
+                         # "Expression/Ex_DX_Sensor_20",
+                         # "Expression/Ex_DY_Sensor_20",
+                         # "Expression/Ex_DZ_Sensor_20",
+                         # "Expression/Ex_ROLL_Sensor_20",
+                         # "Expression/Ex_PITCH_Sensor_20",
+                         # "Expression/Ex_YAW_Sensor_20",
                          ]
 
 if Key == 'trailer2022_sea_send2kaeri':

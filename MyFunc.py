@@ -6,13 +6,15 @@ from recurdyn import *
 from recurdyn import Tire
 from datetime import datetime
 import numpy as np
-import DataProcessing as DP
+import MyPackage._deprecated.DataProcessing as DP
 import re, shutil, time, subprocess, os, glob, joblib, MyVar, threading, random
 import pandas as pd
+import MyPackage as mp
 import matplotlib.pyplot as plt
 
 # Common Variables
-rdSolverDir = "\"C:\Program Files\FunctionBay, Inc\RecurDyn V9R5\Bin\Solver\RDSolverRun.exe\""
+# rdSolverDir = "\"C:\Program Files\FunctionBay, Inc\RecurDyn V9R5\Bin\Solver\RDSolverRun.exe\""
+rdSolverDir = "\"C:\Program Files\FunctionBay, Inc\RecurDyn 2023\Bin\Solver\RDSolverRun.exe\""
 app = None
 application = None
 model_document = None
@@ -198,6 +200,7 @@ def RPLT2CSV(SolverFilesPath: str):
     """
     application.CloseAllPlotDocument()
     CSVExportDir = os.path.abspath(SolverFilesPath)
+    os.chdir(CSVExportDir)
     DP.CreateDir(CSVExportDir)
     RPLTlist = glob.glob(f"{CSVExportDir}\\**\\*.rplt", recursive=True)
     datetime.now().strftime('%Y.%m.%d - %H:%M:%S')
@@ -224,7 +227,7 @@ def RPLT2CSV(SolverFilesPath: str):
 
 def RunDOE_Batch(TopFolderName: str, NumParallelBatches: int = 3, NumCPUCores: int = 8, NumBatRunsOnThisPC: int = 2):
     application.ClearMessage()
-    CaseNo = ["011", "015"]  # ,"012"
+    CaseNo = ["015"]  # ,"012"
     datetime.now().strftime('%Y.%m.%d - %H:%M:%S')
     AnalysisStartTime = time.time()
     for idx_case, c in enumerate(CaseNo):
@@ -265,21 +268,31 @@ def RunDOE_Batch(TopFolderName: str, NumParallelBatches: int = 3, NumCPUCores: i
         # roadName = random.choice(Roads)
         #     for i in range(40):
         #         Tire.ITireGroupGeneric(model.GetEntity(f"GTireGroup{i + 1}")).Road = f"Ground.{roadName}"
-        scales=np.logspace(-2,2,4,endpoint=True)
-        for scale in scales:
-            TireParamScaler(modelPath, radialK=2077, longtitudinalK=5165, lateralK=698985, camberK=68, mode='sub')
-            ChangePVvalue(model, "PV_Spring_K_4", 23299*scale) #23299
-            ChangePVvalue(model, "PV_Spring_C_4", 3975)
-            ChangePVvalue(model, "PV_Spring_K_6", 8864)
-            ChangePVvalue(model, "PV_Spring_C_6", 136)
-            if c == "011":
-                roadName = "GRoad_Uneven_R4p00_ModGeo10"
-                for i in range(40):
-                    Tire.ITireGroupGeneric(model.GetEntity(f"GTireGroup{i + 1}")).Road = f"Ground.{roadName}"
-            
-            SubFolderName = f"{Counter:03d}_Case{c}"
+        p_values = mp.sampling.LHCSampler(10, 1, seed=777) * 2000 + 1000  # 1000~3000
+        i_values = mp.sampling.LHCSampler(10, 1, seed=777) * 400 + 100  # 100~500
+        for n in range(p_values.shape[0]):
+            ChangePVvalue(model, "PV_TX_P", 300)
+            ChangePVvalue(model, "PV_TX_I", 10)
+            ChangePVvalue(model, "PV_TY_P", int(p_values[n, 0]))
+            ChangePVvalue(model, "PV_TY_I", int(i_values[n, 0]))
+            SubFolderName = f"{Counter:03d}_Case{c}_{int(p_values[n, 0])}_{int(i_values[n, 0])}"
             ExportSolverFiles(TopFolderName, SubFolderName, EndTime=EndTime, NumSteps=NumSteps)
             Counter += 1
+            # TireParamScaler(modelPath, radialK=2077, longtitudinalK=5165, lateralK=698985, camberK=68, mode='sub')
+            # ChangePVvalue(model, "PV_Spring_K_4", 23299 * scale)  # 23299
+            # ChangePVvalue(model, "PV_Spring_C_4", 3975)
+            # ChangePVvalue(model, "PV_Spring_K_6", 8864)
+            # ChangePVvalue(model, "PV_Spring_C_6", 136)
+            # if c == "011":
+            #     roadName = "GRoad_Uneven_R4p00_ModGeo10"
+            #     for i in range(40):
+            #         Tire.ITireGroupGeneric(model.GetEntity(f"GTireGroup{i + 1}")).Road = f"Ground.{roadName}"
+            
+            # Revert to original
+            ChangePVvalue(model, "PV_TX_P", 300)
+            ChangePVvalue(model, "PV_TX_I", 10)
+            ChangePVvalue(model, "PV_TY_P", 1000)
+            ChangePVvalue(model, "PV_TY_I", 50)
     batfilespath = WriteBatch(TopFolderName, NumParallelBatches)
     run = joblib.Parallel(n_jobs=NumBatRunsOnThisPC)(joblib.delayed(RunSubprocess)(bat) for bat in batfilespath[:NumBatRunsOnThisPC])
     AnalysisEndTime = time.time()
@@ -494,47 +507,31 @@ def CreateSensor20RelativeDisplacements():
         direction = ['DX', 'DY', 'DZ', "ROLL", "PITCH", "YAW"]
         
         refFrame_s20 = IMarker(model.GetEntity("Sensor_20.CM"))
-        refFrame_s20.RefFrame.SetEulerAngleDegree(EulerAngle.EulerAngle_ZYX,0,0,0)
+        refFrame_s20.RefFrame.SetEulerAngleDegree(EulerAngle.EulerAngle_ZYX, 0, 0, 0)
         
         refFrame_init = model.GetEntity("Trailer_6.Initial")
-        if refFrame_init==None:
-            initialpoint=IReferenceFrame(model_document.CreateReferenceFrame())
-            initialpoint.SetEulerAngleDegree(EulerAngle.EulerAngle_ZYX,0,0,0)
+        if refFrame_init == None:
+            initialpoint = IReferenceFrame(model_document.CreateReferenceFrame())
+            initialpoint.SetEulerAngleDegree(EulerAngle.EulerAngle_ZYX, 0, 0, 0)
             initialpoint.SetOrigin(-5729., 1436.44951453657, 2697.7828)
-            baseBody=IBody(model.GetEntity("Trailer_6"))
-            model.CreateMarker("Initial",baseBody,initialpoint)
-            refFrame_init=IMarker(model.GetEntity("Trailer_6.Initial"))
-        refFrame_init=IMarker(refFrame_init)
-        refFrame_init.RefFrame.SetEulerAngleDegree(EulerAngle.EulerAngle_ZYX,0,0,0)
-        
+            baseBody = IBody(model.GetEntity("Trailer_6"))
+            model.CreateMarker("Initial", baseBody, initialpoint)
+            refFrame_init = IMarker(model.GetEntity("Trailer_6.Initial"))
+        refFrame_init = IMarker(refFrame_init)
+        refFrame_init.RefFrame.SetEulerAngleDegree(EulerAngle.EulerAngle_ZYX, 0, 0, 0)
         
         for dir in direction:
             model.CreateExpressionWithArguments(f"Ex_{dir}_Sensor_20", f"{dir}(1,2)", ["Sensor_20.CM", "Trailer_6.Initial"])
-        model_document.FileSave(f"D:\Research\Trailer2022\Ground_Model\\Trailer_{c}.rdyn",True)
+        model_document.FileSave(f"D:\Research\Trailer2022\Ground_Model\\Trailer_{c}.rdyn", True)
 
 
 
 if __name__ == '__main__':
     application, model_document, plot_document, model = initialize()
-    # application.Settings.CoreNumber = 8
-    #
-    #
-    # CreateSensor20RelativeDisplacements()
     
-    AnalysisFolderName = "221206_Test1"
-    RunDOE_Batch(AnalysisFolderName, NumCPUCores=0, NumParallelBatches=5, NumBatRunsOnThisPC=2)
+    AnalysisFolderName = "221215_Final"
+    # RunDOE_Batch(AnalysisFolderName, NumCPUCores=0, NumParallelBatches=3, NumBatRunsOnThisPC=3)
     RPLT2CSV(f"D:\Research\Trailer2022\Ground_Model\\{AnalysisFolderName}")
-    
-    
-    
-    # ApplyAdaptiveSuspension()
-    # AnalysisStartTime=time.time()
-    # batfilespath = WriteBatch(f"221202_RandomFuck", 7)
-    # run = joblib.Parallel(n_jobs=2)(joblib.delayed(RunSubprocess)(bat) for bat in batfilespath[:2])
-    # AnalysisEndTime = time.time()
-    # h, m, s = DP.Sec2Time(AnalysisEndTime - AnalysisStartTime)
-    # print(f"Analysis finished within {h}hr {m}min {s}sec.")    # CreateGRoadWith1DSplineData()
-    #
     
     dispose()
     
