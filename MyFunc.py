@@ -6,8 +6,7 @@ from recurdyn import *
 from recurdyn import Tire
 from datetime import datetime
 import numpy as np
-import MyPackage._deprecated.DataProcessing as DP
-import re, shutil, time, subprocess, os, glob, joblib, MyVar, threading, random
+import re, shutil, time, subprocess, os, glob, joblib, MyVar, threading, random, os
 import pandas as pd
 import MyPackage as mp
 import matplotlib.pyplot as plt
@@ -95,7 +94,7 @@ def ExportSolverFiles(OutputFolderName: str, OutputFileName: str, EndTime: int =
     model = model_document.Model
     modelPath = model_document.GetPath(PathType.WorkingFolder)
     print(f"{modelPath}{OutputFolderName}\\{OutputFileName}")
-    DP.CreateDir(f"{modelPath}{OutputFolderName}\\{OutputFileName}")
+    os.makedirs(f"{modelPath}{OutputFolderName}\\{OutputFileName}", exist_ok=True)
     # Copy dependency files
     DependentExt = ("tir", "rdf",)
     DependentFiles = []
@@ -201,7 +200,7 @@ def RPLT2CSV(SolverFilesPath: str):
     application.CloseAllPlotDocument()
     CSVExportDir = os.path.abspath(SolverFilesPath)
     os.chdir(CSVExportDir)
-    DP.CreateDir(CSVExportDir)
+    os.makedirs(CSVExportDir, exist_ok=True)
     RPLTlist = glob.glob(f"{CSVExportDir}\\**\\*.rplt", recursive=True)
     datetime.now().strftime('%Y.%m.%d - %H:%M:%S')
     AnalysisStartTime = time.time()
@@ -221,8 +220,8 @@ def RPLT2CSV(SolverFilesPath: str):
         application.PrintMessage(f"Data exported {CSVpath} ({idx_rplt + 1}/{len(RPLTlist)})")
         print(f"Data exported({idx_rplt + 1}/{len(RPLTlist)}) {CSVpath} ")
     AnalysisEndTime = time.time()
-    h, m, s = DP.Sec2Time(AnalysisEndTime - AnalysisStartTime)
-    print(f"Analysis finished within {h}hr {m}min {s}sec.")
+    s=AnalysisEndTime - AnalysisStartTime
+    print(f"Analysis finished within {s}sec.")
 
 
 def RunDOE_Batch(TopFolderName: str, NumParallelBatches: int = 3, NumCPUCores: int = 8, NumBatRunsOnThisPC: int = 2):
@@ -296,8 +295,8 @@ def RunDOE_Batch(TopFolderName: str, NumParallelBatches: int = 3, NumCPUCores: i
     batfilespath = WriteBatch(TopFolderName, NumParallelBatches)
     run = joblib.Parallel(n_jobs=NumBatRunsOnThisPC)(joblib.delayed(RunSubprocess)(bat) for bat in batfilespath[:NumBatRunsOnThisPC])
     AnalysisEndTime = time.time()
-    h, m, s = DP.Sec2Time(AnalysisEndTime - AnalysisStartTime)
-    print(f"Analysis finished within {h}hr {m}min {s}sec.")
+    s = AnalysisEndTime - AnalysisStartTime
+    print(f"Analysis finished within {s}sec.")
 
 def RunSubprocess(single_batfilepath):
     subprocess.run(single_batfilepath, creationflags=subprocess.CREATE_NEW_CONSOLE)
