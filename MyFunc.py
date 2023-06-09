@@ -10,7 +10,7 @@ import re, shutil, time, subprocess, os, glob, joblib, MyVar, threading, random,
 import pandas as pd
 import MyPackage as mp
 import matplotlib.pyplot as plt
-
+from MyPackage import sampling
 # Common Variables
 # rdSolverDir = "\"C:\Program Files\FunctionBay, Inc\RecurDyn V9R5\Bin\Solver\RDSolverRun.exe\""
 rdSolverDir = "\"C:\Program Files\FunctionBay, Inc\RecurDyn 2023\Bin\Solver\RDSolverRun.exe\""
@@ -243,32 +243,8 @@ def RunDOE_Batch(TopFolderName: str, NumParallelBatches: int = 3, NumCPUCores: i
             application.Settings.CoreNumber = NumCPUCores
         else:
             application.Settings.AutoCoreNumber = True
-        #################################################################### FIX #################################################################
-        # Roads = [f"GRoad_Uneven_R4p00_ModGeo{i + 1:02d}" for i in range(11)]
-        # deltaW = np.linspace(-250, 250, 11, endpoint=True, dtype=int)
-        # TireKscales = np.logspace(-2, 2, 2)
-        # TireKscales = DP.LHCSampler(500, 4, seed=0) * 3 - 1  # E-1 ~ E+2
-        # SusKCscales = DP.LHCSampler(500, 4, seed=0) * 2 - 1  # E-1 ~ E+1
-        # for idx, s in enumerate(TireKscales):
-        # TireParamScaler(modelPath,
-        #                 radialK=np.power(10, s[0]),
-        #                 longtitudinalK=np.power(10, s[1]),
-        #                 lateralK=np.power(10, s[2]),
-        #                 camberK=np.power(10, s[3]))
-        # ChangePVvalue(model, "PV_Spring_K_4", 23770 * np.power(10, SusKCscales[idx, 0]))
-        # ChangePVvalue(model, "PV_Spring_K_6", 71310 * np.power(10, SusKCscales[idx, 1]))
-        # ChangePVvalue(model, "PV_Spring_C_4", 1000 * np.power(10, SusKCscales[idx, 2]))
-        # ChangePVvalue(model, "PV_Spring_C_6", 500 * np.power(10, SusKCscales[idx, 3]))
-        # if c == "011":
-        #     roadName=random.choice(Roads)
-        #     for i in range(40):
-        #         Tire.ITireGroupGeneric(model.GetEntity(f"GTireGroup{i + 1}")).Road = f"Ground.{roadName}"
-        # if c == "011":
-        # roadName = random.choice(Roads)
-        #     for i in range(40):
-        #         Tire.ITireGroupGeneric(model.GetEntity(f"GTireGroup{i + 1}")).Road = f"Ground.{roadName}"
-        p_values = mp.sampling.LHCSampler(10, 1, seed=777) * 2000 + 1000  # 1000~3000
-        i_values = mp.sampling.LHCSampler(10, 1, seed=777) * 400 + 100  # 100~500
+        p_values = sampling.LHCSampler(10, 1, seed=777) * 2000 + 1000  # 1000~3000
+        i_values = sampling.LHCSampler(10, 1, seed=777) * 400 + 100  # 100~500
         for n in range(p_values.shape[0]):
             ChangePVvalue(model, "PV_TX_P", 300)
             ChangePVvalue(model, "PV_TX_I", 10)
@@ -528,9 +504,9 @@ def CreateSensor20RelativeDisplacements():
 if __name__ == '__main__':
     application, model_document, plot_document, model = initialize()
     
-    AnalysisFolderName = "221215_Final"
-    # RunDOE_Batch(AnalysisFolderName, NumCPUCores=0, NumParallelBatches=3, NumBatRunsOnThisPC=3)
-    RPLT2CSV(f"D:\Research\Trailer2022\Ground_Model\\{AnalysisFolderName}")
+    AnalysisFolderName = "230609_test"
+    RunDOE_Batch(AnalysisFolderName, NumCPUCores=0, NumParallelBatches=3, NumBatRunsOnThisPC=3)
+    # RPLT2CSV(f"D:\Research\Trailer2022\Ground_Model\\{AnalysisFolderName}")
     
     dispose()
     
