@@ -34,17 +34,6 @@ RunDOE_GUI(
 )
 ```
 
-<<<<<<< HEAD
-#### Export data from results using `analysis.export_data.rplt2csv`
-
-Exported variables are defined in `GlobalVariables.GlobVar.DataExportTargets`.
-
-```
-rplt2csv(f"{os.getcwd()}/TestDOE_GUI")
-```
-
-=======
->>>>>>> 029d9aefaf04e4b0c698123f59e4616f8073a882
 # Simulate using batch solver
 ![batch_demo](https://github.com/hyeonbeenlee/RecurDynPython/assets/78078652/62b8ddea-f3a2-438a-a322-77b9e1c2b7ec)
 
