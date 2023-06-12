@@ -1,4 +1,4 @@
-# Python ProcessNet for RecurDyn
+# RecurDyn ProcessNet with Python
 > Automates RecurDyn operations with ProcessNet and Python.  
 For initial setups, please follow this [link](http://www.safetyman.kr/processnet-python-%ec%82%ac%ec%9a%a9%eb%b2%95/) (Korean).    
 For official tutorials provided by FunctionBay Inc., refer to this [link](https://www.youtube.com/watch?v=QjCFDidGmHo) (Korean).
@@ -13,7 +13,7 @@ Set `rdSolverDir` to `"<YOUR_RECURDYN_INSTALL_DIR>\Bin\Solver\RDSolverRun.exe"` 
 ![gui_demo](https://github.com/hyeonbeenlee/RecurDynPython/assets/78078652/fc98aef7-bc89-43e6-9415-4245846be155)
 
 Call `analysis.doe_gui.RunDOE_GUI` with arguments.  
-**You can modify DOE scenario by editing line 55~65 in `analysis/doe_gui.py`**  
+**You can modify DOE scenario by editing line 55~65 in [analysis/doe_gui.py](https://github.com/hyeonbeenlee/RecurDynPython/blob/main/analysis/doe_gui.py)`**  
 This method is **_not parallelizable_**.
 
 #### Arguments
@@ -49,7 +49,7 @@ rplt2csv(f"{os.getcwd()}/TestDOE_GUI")
 ![batch_demo](https://github.com/hyeonbeenlee/RecurDynPython/assets/78078652/62b8ddea-f3a2-438a-a322-77b9e1c2b7ec)
 
 Call `analysis.doe_batch.RunDOE_Batch` with arguments.  
-**You can control DOE scenario by editing line 59~67 in `analysis/doe_batch.py`**  
+**You can control DOE scenario by editing line 59~67 in [analysis/doe_batch.py](https://github.com/hyeonbeenlee/RecurDynPython/blob/main/analysis/doe_batch.py)**  
 This method is **_parallelizable_**, but requires corresponding number of licenses.
 
 #### Arguments
