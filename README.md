@@ -1,4 +1,4 @@
-# Python ProcessNet for RecurDyn
+# RecurDyn ProcessNet with Python
 > Automates RecurDyn operations with ProcessNet and Python.  
 For initial setups, please follow this [link](http://www.safetyman.kr/processnet-python-%ec%82%ac%ec%9a%a9%eb%b2%95/) (Korean).    
 For official tutorials provided by FunctionBay Inc., refer to this [link](https://www.youtube.com/watch?v=QjCFDidGmHo) (Korean).
