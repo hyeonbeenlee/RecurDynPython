@@ -53,7 +53,7 @@ This method is **_parallelizable_**, but requires corresponding number of licens
 
 ```
 RunDOE_Batch(
-    ModelFileDir="SampleModel.rdyn",
+    ModelFileDir=f"{os.getcwd()}/SampleModel.rdyn",
     TopFolderName="TestDOE_Batch",
     NumCPUCores=8,
     EndTime=1,
