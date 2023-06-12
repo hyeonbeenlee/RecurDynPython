@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
     # Batch solver (parallelized)
     RunDOE_Batch(
-        ModelFileDir="SampleModel.rdyn",
+        ModelFileDir=f"{os.getcwd()}/SampleModel.rdyn",
         TopFolderName="TestDOE_Batch",
         NumCPUCores=8,
         EndTime=1,
