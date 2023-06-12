@@ -7,7 +7,7 @@ For official tutorials provided by FunctionBay Inc., refer to this [link](https:
 ### Detailed instructions are provided in [Tutorial.ipynb](https://github.com/hyeonbeenlee/RecurDynPython/blob/main/Tutorial.ipynb)
 ### For useful tips, check out [Tips.md](https://github.com/hyeonbeenlee/RecurDynPython/blob/main/Tips.md) (Korean)
 # Setup
-Set `rdSolverDir` to `"<YOUR_RECURDYN_INSTALL_DIR>\Bin\Solver\RDSolverRun.exe"` in `GlobalVariables.py`.
+Set `rdSolverDir` to `"<YOUR_RECURDYN_INSTALL_DIR>\Bin\Solver\RDSolverRun.exe"` in [GlobalVariables.py](https://github.com/hyeonbeenlee/RecurDynPython/blob/main/GlobalVariables.py).
 
 # Simulate using GUI solver
 ![gui_demo](https://github.com/hyeonbeenlee/RecurDynPython/assets/78078652/fc98aef7-bc89-43e6-9415-4245846be155)
