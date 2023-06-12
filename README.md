@@ -13,7 +13,7 @@ Set `rdSolverDir` to `"<YOUR_RECURDYN_INSTALL_DIR>\Bin\Solver\RDSolverRun.exe"` 
 ![gui_demo](https://github.com/hyeonbeenlee/RecurDynPython/assets/78078652/fc98aef7-bc89-43e6-9415-4245846be155)
 
 Call `analysis.doe_gui.RunDOE_GUI` with arguments.  
-**You can modify DOE scenario by editing line 55~65 in [analysis/doe_gui.py](https://github.com/hyeonbeenlee/RecurDynPython/blob/main/analysis/doe_gui.py)`**  
+**You can modify DOE scenario by editing line 56~65 in [analysis/doe_gui.py](https://github.com/hyeonbeenlee/RecurDynPython/blob/main/analysis/doe_gui.py)`**  
 This method is **_not parallelizable_**.
 
 #### Arguments
