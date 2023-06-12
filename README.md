@@ -20,7 +20,7 @@ This method is **_not parallelizable_**.
 
 - `ModelFileDir: str` Absolute path of model file (\*.rdyn).
 - `TopFolderName: str` Folder name to create.
-- `NumCPUCores: int` Number of CPU threads to use per simulation. Must be one of `[0,1,2,4,8,16]`
+- `NumCPUCores: int` Number of CPU threads to use per simulation. Must be one of `[0(Auto),1,2,4,8,16]`
 - `EndTime: float` Simulation end time.
 - `NumSteps: int` Number of time steps.
 
@@ -45,7 +45,7 @@ This method is **_parallelizable_**, but requires corresponding number of licens
 
 - `ModelFileDir: str` Absolute path of model file (\*.rdyn).
 - `TopFolderName: str` Folder name to create.
-- `NumCPUCores: int` Number of CPU threads to use per simulation. Must be one of `[0,1,2,4,8,16]`
+- `NumCPUCores: int` Number of CPU threads to use per simulation. Must be one of `[0(Auto),1,2,4,8,16]`
 - `EndTime: float` Simulation end time.
 - `NumSteps: int` Number of time steps.
 - `NumParallelBatches: int` Number of parallelized simulations (\*.bat) to create.
