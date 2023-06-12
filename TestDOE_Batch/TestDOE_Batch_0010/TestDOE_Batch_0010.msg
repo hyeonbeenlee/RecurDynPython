@@ -24,7 +24,7 @@ Redundant Constraint Information
 _________________________________________________________________________________________________
 RecurDyn/SOLVER Information
     DLL type Solver for Windows 64 Bit
-    No. of CPU Thread = 8
+    No. of CPU Thread = 4
     Save Solver Animation File(RAN) Option is turned on
     C:\Program Files\FunctionBay, Inc\RecurDyn 2023\Bin\Solver\Slvcore.dll
     C:\Program Files\FunctionBay, Inc\RecurDyn 2023\Bin\Solver\Cuser.dll
@@ -41,7 +41,7 @@ Analysis Information
 
 _________________________________________________________________________________________________
 Information of starting time
-    Starting Time/Date     = 18:57:49 / 2023.6.12
+    Starting Time/Date     = 22:50:53 / 2023.6.12
 
 _________________________________________________________________________________________________
 Integrator Information
@@ -59,9 +59,9 @@ Analysis processing...
 
 _________________________________________________________________________________________________
 Analysis Time Information
-    Starting Time/Date     = 18:57:49 / 2023.6.12
-    Ending Time/Date       = 18:57:49 / 2023.6.12
-    CPU Time = 0.1 Second (0 hr. 0 min 0.1 sec.)
+    Starting Time/Date     = 22:50:53 / 2023.6.12
+    Ending Time/Date       = 22:50:53 / 2023.6.12
+    CPU Time = 0.2 Second (0 hr. 0 min 0.2 sec.)
 
 _________________________________________________________________________________________________
 Analysis is accomplished successfully
