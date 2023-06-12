@@ -13,6 +13,7 @@ def Import(importfile: str):
     print(f"Imported file: {importfile}")
     model_document.FileImport(importfile)
 
-def ChangePVvalue(model, PVname: str, PVvalue: float):
+
+def ChangePVvalue(model: ISubSystem, PVname: str, PVvalue: float):
     PV = IParametricValue(model.GetEntity(PVname))
     PV.Value = PVvalue

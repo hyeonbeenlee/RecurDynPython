@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<AnalysisResultFiles rpmxver="1000" rdsolverver="9.5.10442.0" os="WINDOWS" filename="TestDOE_GUI\TestDOE_GUI_0009\TestDOE_GUI_0009">
+    <Command ID="1" type="Dynamic" StartTime="0" text="sim/dyn, end = 1, step = 100">
+        <!--File type="rplt" path=".\TestDOE_GUI_0009.rplt" datatype="New"-->
+        <File type="rad" path=".\TestDOE_GUI_0009.rad" datatype="New" />
+        <File type="ran" path=".\TestDOE_GUI_0009.ran" datatype="New" />
+    </Command>
+    <Command ID="2" type="Stop" StartTime="1" text="stop" />
+</AnalysisResultFiles>

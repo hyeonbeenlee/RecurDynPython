@@ -9,7 +9,6 @@ from GlobalVariables import GlobVar
 from . import initialize, dispose
 
 
-
 def rplt2csv(SolverFilesPath: str):
     """
     Scans and reads all *.rplt files in the SolverFilesAbsPath (recursively scanned).
@@ -19,12 +18,10 @@ def rplt2csv(SolverFilesPath: str):
     """
     application, model_document, plot_document, model = initialize()
     application.CloseAllPlotDocument()
-    CSVExportDir = os.path.abspath(SolverFilesPath)
-    os.chdir(CSVExportDir)
-    os.makedirs(CSVExportDir, exist_ok=True)
-    RPLTlist = glob.glob(f"{CSVExportDir}\\**\\*.rplt", recursive=True)
+    os.makedirs(SolverFilesPath, exist_ok=True)
+    RPLTlist = glob.glob(f"{SolverFilesPath}\\**\\*.rplt", recursive=True)
     datetime.now().strftime("%Y.%m.%d - %H:%M:%S")
-    AnalysisStartTime = time.time()
+    AnalysisStartTime = time.perf_counter()
     for idx_rplt, rplt in enumerate(RPLTlist):
         application.NewPlotDocument("PlotDoc")
         application.OpenPlotDocument(rplt)
@@ -37,13 +34,13 @@ def rplt2csv(SolverFilesPath: str):
         DataExportTargets = [
             f"{rpltname}/{target}" for target in GlobVar.DataExportTargets
         ]
-        CSVpath = f"{CSVExportDir}\\{rpltname}.csv"
+        CSVpath = f"{SolverFilesPath}\\{rpltname}.csv"
         plot_document.ExportData(CSVpath, DataExportTargets, True, False, 8)
         application.ClosePlotDocument(plot_document)
         application.PrintMessage(
             f"Data exported {CSVpath} ({idx_rplt + 1}/{len(RPLTlist)})"
         )
         print(f"Data exported({idx_rplt + 1}/{len(RPLTlist)}) {CSVpath} ")
-    AnalysisEndTime = time.time()
+    AnalysisEndTime = time.perf_counter()
     s = AnalysisEndTime - AnalysisStartTime
-    print(f"Analysis finished within {s}sec.")
+    print(f"Export finished within {s:.2f}sec.")

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<AnalysisResultFiles rpmxver="1000" rdsolverver="10.1.11516.0" os="WINDOWS" filename="TestDOE_Batch_0006">
+    <Command ID="1" type="Dynamic" StartTime="0" text="SIM/DYN, END = 1, STEP = 100">
+        <!--File type="rplt" path=".\TestDOE_Batch_0006.rplt" datatype="New"-->
+        <File type="ran" path=".\TestDOE_Batch_0006.ran" datatype="New" />
+    </Command>
+    <Command ID="2" type="Stop" StartTime="1" text="STOP" />
+</AnalysisResultFiles>

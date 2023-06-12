@@ -1,0 +1,46 @@
+ Data Set Title:
+ 
+  Static Analysis                                                               
+  
+ 
+                 Maximum displacement error =
+ 
+                 Convergence was achieved in
+ 
+                   Residual error less than
+ 
+ INITIAL CONDITIONS
+ 
+                           Rectangular Coordinates
+                      (Center of Mass or FLEX_BODY LBRF)
+ 
+   Body Type       ID          X                     Y                     Z
+       PART/         1             0.0000000000000E+00             0.0000000000000E+00             0.0000000000000E+00
+       PART/         3             0.5000000000000E+03            -0.2000000000000E+03             0.0000000000000E+00
+ 
+ 
+                         Angular Coordinates (Degrees)
+                      (Center of Mass or FLEX_BODY LBRF)
+ 
+   Body Type       ID         Psi                  Theta                  Phi
+       PART/         1             0.0000000000000E+00             0.0000000000000E+00             0.0000000000000E+00
+       PART/         3             0.0000000000000E+00             0.0000000000000E+00             0.0000000000000E+00
+ 
+ 
+                              Velocity Solution
+ 
+                           Rectangular Coordinates
+                      (Center of Mass or FLEX_BODY LBRF)
+ 
+   Body Type       ID         Xdot                  Ydot                  Zdot
+       PART/         1             0.0000000000000E+00             0.0000000000000E+00             0.0000000000000E+00
+       PART/         3             0.0000000000000E+00             0.0000000000000E+00             0.0000000000000E+00
+ 
+ 
+                          Angular Coordinates (Rad/Time)
+                      (Center of Mass or FLEX_BODY LBRF)
+ 
+   Body Type       ID         Wx                   Wy                   Wz
+       PART/         1             0.0000000000000E+00             0.0000000000000E+00             0.0000000000000E+00
+       PART/         3             0.0000000000000E+00             0.0000000000000E+00             0.0000000000000E+00
+ 
