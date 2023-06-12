@@ -1,4 +1,5 @@
 from recurdyn import *
+
 # from recurdyn import Chart
 # from recurdyn import MTT2D
 # from recurdyn import FFlex
@@ -42,6 +43,7 @@ def initialize():
 
     return application, model_document, plot_document, model
 
+
 # dispose() should be called after ProcessNet function call.
 def dispose():
     global application
@@ -63,11 +65,10 @@ def dispose():
     model_document.SetModified()
     model_document.SetUndoHistory("Python ProcessNet")
 
+
 #
 application, model_document, plot_document, model = initialize()
 #
-
-
 
 
 #

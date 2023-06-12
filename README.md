@@ -1,16 +1,18 @@
 # ProcessNetPython for RecurDyn V9R5
-***Written by. Hyeonbeen Lee***  
+
+**_Written by. Hyeonbeen Lee_**  
 Automates RecurDyn operations with ProcessNet and Python.  
-For initial setups, please follow this [link](http://www.safetyman.kr/processnet-python-%ec%82%ac%ec%9a%a9%eb%b2%95/) (Korean).    
+For initial setups, please follow this [link](http://www.safetyman.kr/processnet-python-%ec%82%ac%ec%9a%a9%eb%b2%95/) (Korean).  
 For official tutorials provided by FunctionBay Inc., refer to this [link](https://www.youtube.com/watch?v=QjCFDidGmHo) (Korean).
 
-
 # Setup
-Set ```rdSolverDir``` to ```"<YOUR_RECURDYN_INSTALL_DIR>\Bin\Solver\RDSolverRun.exe"``` in ```GlobalVariables.py```.
+
+Set `rdSolverDir` to `"<YOUR_RECURDYN_INSTALL_DIR>\Bin\Solver\RDSolverRun.exe"` in `GlobalVariables.py`.
 
 # Initialization
 
 Initialize with imports and global variables
+
 ```
 from recurdyn import *
 
@@ -41,7 +43,9 @@ model = None
 ref_frame_1 = None
 ref_frame_2 = None
 ```
+
 #### Define `initialize()` and `dispose()` functions.
+
 ```
 # initialize() should be called before ProcessNet function call.
 def initialize():
@@ -119,7 +123,9 @@ RunDOE_GUI(
 ```
 
 #### Export data from results using `analysis.export_data.rplt2csv`
-Exported variables are defined in ```GlobalVariables.GlobVar.DataExportTargets```.
+
+Exported variables are defined in `GlobalVariables.GlobVar.DataExportTargets`.
+
 ```
 rplt2csv(f"{os.getcwd()}/TestDOE_GUI")
 ```
@@ -150,8 +156,11 @@ RunDOE_Batch(
     NumParallelBatches=5,
 )
 ```
+
 #### Export data from results using `analysis.export_data.rplt2csv`
-Exported variables are defined in ```GlobalVariables.GlobVar.DataExportTargets```.
+
+Exported variables are defined in `GlobalVariables.GlobVar.DataExportTargets`.
+
 ```
 rplt2csv(f"{os.getcwd()}/TestDOE_Batch")
 ```
