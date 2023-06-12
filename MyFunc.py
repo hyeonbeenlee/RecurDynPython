@@ -6,14 +6,13 @@ from recurdyn import *
 from recurdyn import Tire
 from datetime import datetime
 import numpy as np
-import re, shutil, time, subprocess, os, glob, joblib, MyVar, threading, random, os
+import re, os, glob,os
 import pandas as pd
-import MyPackage as mp
-import matplotlib.pyplot as plt
-from MyPackage import sampling
-# Common Variables
-# rdSolverDir = "\"C:\Program Files\FunctionBay, Inc\RecurDyn V9R5\Bin\Solver\RDSolverRun.exe\""
-rdSolverDir = "\"C:\Program Files\FunctionBay, Inc\RecurDyn 2023\Bin\Solver\RDSolverRun.exe\""
+
+from utils.modeling import *
+from analysis.solve_batch import *
+from analysis.export_data import *
+
 app = None
 application = None
 model_document = None
@@ -69,213 +68,6 @@ def dispose():
     # If you call SetModified(), Animation will be reset.
     # model_document.SetModified()
     model_document.SetUndoHistory("Python ProcessNet")
-
-def ChangePVvalue(model, PVname: str, PVvalue: float):
-    PV = IParametricValue(model.GetEntity(PVname))
-    PV.Value = PVvalue
-
-def Import(importfile: str):
-    modelPath = model_document.GetPath(PathType.WorkingFolder)
-    print(f"Imported file: {importfile}")
-    model_document.FileImport(importfile)
-
-def ExportSolverFiles(OutputFolderName: str, OutputFileName: str, EndTime: int = 1, NumSteps: int = 101, PlotMultiplierStepFactor: int = 1):
-    """
-    Exports *.rmd, *.rss, and copies *.(DependentExt) to directory modelPath/OutputFolderName/*.* for batch automated solving.
-    DependentExt may include tire files (*.tir), GRoad files (*.rdf), or flexible meshes.
-    :param OutputFolderName:
-    :param OutputFileName:
-    :param EndTime: Simulation end time
-    :param NumSteps: Simulation steps
-    :param PlotMultiplierStepFactor:
-    :return:
-    """
-    model_document = application.ActiveModelDocument
-    model = model_document.Model
-    modelPath = model_document.GetPath(PathType.WorkingFolder)
-    print(f"{modelPath}{OutputFolderName}\\{OutputFileName}")
-    os.makedirs(f"{modelPath}{OutputFolderName}\\{OutputFileName}", exist_ok=True)
-    # Copy dependency files
-    DependentExt = ("tir", "rdf",)
-    DependentFiles = []
-    for ext in DependentExt:
-        DependentFiles.extend(glob.glob(f"{modelPath}*.{ext}"))
-    for file in DependentFiles:
-        shutil.copy(file, f"{modelPath}{OutputFolderName}\\{OutputFileName}")
-    # Analysis Property
-    model_document.ModelProperty.DynamicAnalysisProperty.MatchSolvingStepSize = True
-    model_document.ModelProperty.DynamicAnalysisProperty.MatchSimulationEndTime = True
-    model_document.ModelProperty.DynamicAnalysisProperty.PlotMultiplierStepFactor.Value = PlotMultiplierStepFactor
-    # RMD export
-    model_document.FileExport(f"{modelPath}{OutputFolderName}\\{OutputFileName}\\{OutputFileName}.rmd", True)
-    # RSS export
-    RSScontents = f"SIM/DYN, END = {EndTime}, STEP = {NumSteps}\nSTOP"
-    rss = open(f"{modelPath}{OutputFolderName}\\{OutputFileName}\\{OutputFileName}.rss", 'w')
-    rss.write(RSScontents)
-    rss.close()
-
-# def WriteBatch(SolverFilesFolderName: str, parallelBatches: 1):
-#     global rdSolverDir
-#     application.ClearMessage()
-#     model_document = application.ActiveModelDocument
-#     model = model_document.Model
-#     modelPath = model_document.GetPath(PathType.WorkingFolder)
-#     RMDlist = glob.glob(f"{modelPath}{SolverFilesFolderName}\\**\\*.rmd", recursive=True)
-#     batfiles=[]
-#     for i in range(parallelBatches):
-#         BatchFileName = f"{SolverFilesFolderName}_{i + 1}.bat"
-#         interval = round(len(RMDlist) / parallelBatches)
-#         bat = open(f"{modelPath}{SolverFilesFolderName}\\{BatchFileName}", 'w')
-#         if i == parallelBatches - 1:  # Last index
-#             idx_start = i * interval
-#             idx_end = len(RMDlist)
-#         else:
-#             idx_start = i * interval
-#             idx_end = (i + 1) * interval
-#         for rmdName in RMDlist[idx_start: idx_end]:
-#             solverfilename = os.path.basename(rmdName).split('.')[:-1]
-#             if len(os.path.basename(rmdName).split('.')) > 2:
-#                 solverfilename = '.'.join(os.path.basename(rmdName).split('.')[:-1])
-#             else:
-#                 solverfilename = ''.join(solverfilename)
-#             BATcontent = []
-#             BATcontent.append(modelPath[:2])  # Drive Name
-#             BATcontent.append(f"cd {os.path.dirname(rmdName)}")  # cd RMD path
-#             BATcontent.append(f"{rdSolverDir} {solverfilename} {solverfilename}")  #
-#             bat.writelines(line + "\n" for line in BATcontent)
-#         bat.close()
-#         application.PrintMessage(f"Created batch executable {modelPath}{SolverFilesFolderName}\\{BatchFileName}")
-#         print(f"Created batch executable {modelPath}{SolverFilesFolderName}\\{BatchFileName}")
-#         batfiles.append(f"{modelPath}{SolverFilesFolderName}\\{BatchFileName}")
-#     return batfiles
-
-def WriteBatch(SolverFilesFolderName: str, parallelBatches: 1):
-    """
-    Write *.bat execution files for batch solving.
-    :param SolverFilesFolderName:
-    :param parallelBatches:
-    :return:
-    """
-    global rdSolverDir
-    application.ClearMessage()
-    model_document = application.ActiveModelDocument
-    model = model_document.Model
-    modelPath = model_document.GetPath(PathType.WorkingFolder)
-    RMDlist = glob.glob(f"{modelPath}{SolverFilesFolderName}\\**\\*.rmd", recursive=True)
-    batfilespath = []
-    for i in range(parallelBatches):
-        BatchFileName = f"{SolverFilesFolderName}_{i + 1}.bat"
-        interval = round(len(RMDlist) / parallelBatches)
-        bat = open(f"{modelPath}{SolverFilesFolderName}\\{BatchFileName}", 'w')
-        if i == parallelBatches - 1:  # Last index
-            idx_start = i * interval
-            idx_end = len(RMDlist)
-        else:
-            idx_start = i * interval
-            idx_end = (i + 1) * interval
-        for rmdName in RMDlist[idx_start: idx_end]:
-            solverfilename = os.path.basename(rmdName).split('.')[:-1]
-            if len(os.path.basename(rmdName).split('.')) > 2:
-                solverfilename = '.'.join(os.path.basename(rmdName).split('.')[:-1])
-            else:
-                solverfilename = ''.join(solverfilename)
-            BATcontent = []
-            BATcontent.append(modelPath[:2])  # Drive Name
-            BATcontent.append(f"cd {os.path.dirname(rmdName)}")  # cd RMD path
-            BATcontent.append(f"{rdSolverDir} {solverfilename} {solverfilename}")  #
-            bat.writelines(line + "\n" for line in BATcontent)
-        bat.close()
-        application.PrintMessage(f"Created batch executable {modelPath}{SolverFilesFolderName}\\{BatchFileName}")
-        print(f"Created batch executable {modelPath}{SolverFilesFolderName}\\{BatchFileName}")
-        batfilespath.append(f"{modelPath}{SolverFilesFolderName}\\{BatchFileName}")
-    return batfilespath
-
-def RPLT2CSV(SolverFilesPath: str):
-    """
-    Scans and reads all *.rplt files in the SolverFilesAbsPath (recursively scanned).
-    Then export values from Var.DataExportTargets in *.csv format.
-    :param SolverFilesPath: rplt files directory
-    :return:
-    """
-    application.CloseAllPlotDocument()
-    CSVExportDir = os.path.abspath(SolverFilesPath)
-    os.chdir(CSVExportDir)
-    os.makedirs(CSVExportDir, exist_ok=True)
-    RPLTlist = glob.glob(f"{CSVExportDir}\\**\\*.rplt", recursive=True)
-    datetime.now().strftime('%Y.%m.%d - %H:%M:%S')
-    AnalysisStartTime = time.time()
-    for idx_rplt, rplt in enumerate(RPLTlist):
-        application.NewPlotDocument("PlotDoc")
-        application.OpenPlotDocument(rplt)
-        plot_document = application.ActivePlotDocument
-        rpltname = os.path.basename(rplt).split('.')[:-1]
-        if len(os.path.basename(rplt).split('.')) > 2:
-            rpltname = '.'.join(os.path.basename(rplt).split('.')[:-1])
-        else:
-            rpltname = ''.join(rpltname)
-        DataExportTargets = [f"{rpltname}/{target}" for target in MyVar.DataExportTargets]
-        CSVpath = f"{CSVExportDir}\\{rpltname}.csv"
-        plot_document.ExportData(CSVpath, DataExportTargets, True, False, 8)
-        application.ClosePlotDocument(plot_document)
-        application.PrintMessage(f"Data exported {CSVpath} ({idx_rplt + 1}/{len(RPLTlist)})")
-        print(f"Data exported({idx_rplt + 1}/{len(RPLTlist)}) {CSVpath} ")
-    AnalysisEndTime = time.time()
-    s=AnalysisEndTime - AnalysisStartTime
-    print(f"Analysis finished within {s}sec.")
-
-
-def RunDOE_Batch(TopFolderName: str, NumParallelBatches: int = 3, NumCPUCores: int = 8, NumBatRunsOnThisPC: int = 2):
-    application.ClearMessage()
-    CaseNo = ["015"]  # ,"012"
-    datetime.now().strftime('%Y.%m.%d - %H:%M:%S')
-    AnalysisStartTime = time.time()
-    for idx_case, c in enumerate(CaseNo):
-        Counter = 1
-        #################################################################### FIX #################################################################
-        model_document = application.OpenModelDocument(f"D:\Research\Trailer2022\Ground_Model\\Trailer_{c}.rdyn")
-        # model_document = application.OpenModelDocument(f"D:\Research\Trailer2021\SimFiles\DNN\\Trailer_{c}.rdyn")
-        modelPath = model_document.GetPath(PathType.WorkingFolder)
-        model = model_document.Model
-        EndTime = IParametricValue(model.GetEntity("PV_EndTime")).Value
-        NumSteps = IParametricValue(model.GetEntity("PV_NumSteps")).Value
-        if NumCPUCores:
-            application.Settings.AutoCoreNumber = False
-            application.Settings.CoreNumber = NumCPUCores
-        else:
-            application.Settings.AutoCoreNumber = True
-        p_values = sampling.LHCSampler(10, 1, seed=777) * 2000 + 1000  # 1000~3000
-        i_values = sampling.LHCSampler(10, 1, seed=777) * 400 + 100  # 100~500
-        for n in range(p_values.shape[0]):
-            ChangePVvalue(model, "PV_TX_P", 300)
-            ChangePVvalue(model, "PV_TX_I", 10)
-            ChangePVvalue(model, "PV_TY_P", int(p_values[n, 0]))
-            ChangePVvalue(model, "PV_TY_I", int(i_values[n, 0]))
-            SubFolderName = f"{Counter:03d}_Case{c}_{int(p_values[n, 0])}_{int(i_values[n, 0])}"
-            ExportSolverFiles(TopFolderName, SubFolderName, EndTime=EndTime, NumSteps=NumSteps)
-            Counter += 1
-            # TireParamScaler(modelPath, radialK=2077, longtitudinalK=5165, lateralK=698985, camberK=68, mode='sub')
-            # ChangePVvalue(model, "PV_Spring_K_4", 23299 * scale)  # 23299
-            # ChangePVvalue(model, "PV_Spring_C_4", 3975)
-            # ChangePVvalue(model, "PV_Spring_K_6", 8864)
-            # ChangePVvalue(model, "PV_Spring_C_6", 136)
-            # if c == "011":
-            #     roadName = "GRoad_Uneven_R4p00_ModGeo10"
-            #     for i in range(40):
-            #         Tire.ITireGroupGeneric(model.GetEntity(f"GTireGroup{i + 1}")).Road = f"Ground.{roadName}"
-            
-            # Revert to original
-            ChangePVvalue(model, "PV_TX_P", 300)
-            ChangePVvalue(model, "PV_TX_I", 10)
-            ChangePVvalue(model, "PV_TY_P", 1000)
-            ChangePVvalue(model, "PV_TY_I", 50)
-    batfilespath = WriteBatch(TopFolderName, NumParallelBatches)
-    run = joblib.Parallel(n_jobs=NumBatRunsOnThisPC)(joblib.delayed(RunSubprocess)(bat) for bat in batfilespath[:NumBatRunsOnThisPC])
-    AnalysisEndTime = time.time()
-    s = AnalysisEndTime - AnalysisStartTime
-    print(f"Analysis finished within {s}sec.")
-
-def RunSubprocess(single_batfilepath):
-    subprocess.run(single_batfilepath, creationflags=subprocess.CREATE_NEW_CONSOLE)
 
 def CreateSplineExpressions(Spline_Dir):
     application.ClearMessage()
@@ -393,7 +185,7 @@ def CreateExpressionLoop():
         model_document.ModelProperty.DynamicAnalysisProperty.SimulationTime.Value = IParametricValue(model.GetEntity("PV_EndTime")).Value
         model_document.OutputFileName = f"{name}\\{name}"
         model_document.Analysis(AnalysisMode.Dynamic)
-        RPLT2CSV(f"{dir}\\{name}")
+        rplt2csv(f"{dir}\\{name}")
 
 def CreateGRoadWith1DSplineData():
     """
@@ -458,19 +250,6 @@ def TireParamScaler(modelPath, TireFileName="UATire_MMKS_Trailer_Comb_Bump", rad
     with open(f"{modelPath}\\{TireFileName}.tir", 'w') as f:
         f.writelines(newlines)
 
-def ApplyAdaptiveSuspension():
-    suspensions = []
-    axis_nums = [6, 4]
-    dirs = ['L', 'R']
-    for n_ax in axis_nums:
-        for i in range(n_ax):
-            suspensions.append(f"Sus_{n_ax}_{dirs[0]}{i + 1}")
-            suspensions.append(f"Sus_{n_ax}_{dirs[1]}{i + 1}")
-    for sus in suspensions:
-        subsys_sus = ISubSystem(model.GetEntity(sus))
-        spring = IForceSpring(subsys_sus.GetEntity("Spring_Sus"))
-        spring.Stiffness.UseSpline = True
-
 def CreateSensor20RelativeDisplacements():
     CaseNo = ["011", "015"]  # ,"012"
     for idx_case, c in enumerate(CaseNo):
@@ -505,8 +284,8 @@ if __name__ == '__main__':
     application, model_document, plot_document, model = initialize()
     
     AnalysisFolderName = "230609_test"
-    RunDOE_Batch(AnalysisFolderName, NumCPUCores=0, NumParallelBatches=3, NumBatRunsOnThisPC=3)
-    # RPLT2CSV(f"D:\Research\Trailer2022\Ground_Model\\{AnalysisFolderName}")
+    # RunDOE_Batch(AnalysisFolderName, NumCPUCores=0, NumParallelBatches=3, NumBatRunsOnThisPC=3)
+    rplt2csv(f"D:\Research\Trailer2022\Ground_Model\\{AnalysisFolderName}")
     
     dispose()
     
