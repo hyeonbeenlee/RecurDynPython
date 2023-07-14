@@ -14,6 +14,9 @@ def Import(importfile: str):
     model_document.FileImport(importfile)
 
 
-def ChangePVvalue(model: ISubSystem, PVname: str, PVvalue: float):
+def ChangePVvalue(model_document: ISubSystem, PVname: str, PVvalue: float):
     PV = IParametricValue(model.GetEntity(PVname))
-    PV.Value = PVvalue
+    # print(PV._get_Value()) # before
+    PV._set_Value(PVvalue)
+    # print(PV._get_Value()) # after
+    

@@ -1,8 +1,8 @@
 ﻿__________________________________________________________________________________________________
-RecurDyn V9R5 [Windows x64 System 9.5.10442.0] Analysis message file.
-Copyright (C) 1997 - 2021 FunctionBay, Inc. All rights reserved.
+RecurDyn2023 [Windows x64 System 10.1.11516.0] Analysis message file.
+Copyright (C) 1997 - 2022 FunctionBay, Inc. All rights reserved.
 
-Model file: TestDOE_GUI\TestDOE_GUI_0006\TestDOE_GUI_0006.rdyn [Model Name: Model1]
+RMD file: TestDOE_GUI_0006.rmd [Model Name: Model1]
 
 _________________________________________________________________________________________________
 System Configuration Information
@@ -10,9 +10,9 @@ System Configuration Information
     No. of Generalized Velocity                     = 1
     No. of Rigid Body                               = 1
 
-Kinematic Degree of Freedom         = 1
+Kinematic Degree of Freedom         = 0
 
-Total array size                    = 2743
+Total array size                    = 2868
 Total memory size for array         = 0 MB
 
 Success Process: Array Structure Construction
@@ -26,8 +26,8 @@ RecurDyn/SOLVER Information
     DLL type Solver for Windows 64 Bit
     No. of CPU Thread = 8
     Save Solver Animation File(RAN) Option is turned on
-    C:\Program Files\FunctionBay, Inc\RecurDyn V9R5\Bin\Solver\Slvcore.dll
-    C:\Program Files\FunctionBay, Inc\RecurDyn V9R5\Bin\Solver\Cuser.dll
+    C:\Program Files\FunctionBay, Inc\RecurDyn 2023\Bin\Solver\Slvcore.dll
+    C:\Program Files\FunctionBay, Inc\RecurDyn 2023\Bin\Solver\Cuser.dll
 
 _________________________________________________________________________________________________
 Analysis Information
@@ -40,28 +40,28 @@ Analysis Information
     Error Tolerance                = 5.0E-03
 
 _________________________________________________________________________________________________
-Integrator Information
-     Advanced Hybrid Implicit Integrator
-        Numerical Damping          = 1.000000
-        Linear Solver For MBD      = DENSE
+Information of starting time
+    Starting Time/Date     = 18:50:13 / 2023.7.14
 
 _________________________________________________________________________________________________
-Information of starting time
-    Starting Time/Date     = 18:57:25 / 2023.6.12
+Integrator Information
+     Advanced Hybrid Implicit Integrator :: LDLT
+        Numerical Damping          = 1.000000
+        Linear Solver For MBD      = DENSE
 
 _________________________________________________________________________________________________
 Analysis processing...
 
         TIME          STEPSIZE        A_DELNRM          NJAC      NRES      ANRF     AINTF
-    6.133000E-03    5.120000E-04    6.048099E-06         100       300         0         0
-    8.400000E-01    1.000000E-02    6.576581E-02         199       597         0         0
-    1.000000E+00    1.000000E-02    1.988676E-01         215       645         0         0
+    6.133000E-03    5.120000E-04    0.000000E+00         100       300         0         0
+    8.500000E-01    1.000000E-02    1.318187E-18         200       600         0         0
+    1.000000E+00    1.000000E-02    0.000000E+00         215       645         0         0
 
 _________________________________________________________________________________________________
 Analysis Time Information
-    Starting Time/Date     = 18:57:25 / 2023.6.12
-    Ending Time/Date       = 18:57:25 / 2023.6.12
-    CPU Time = 0.5 Second (0 hr. 0 min 0.5 sec.)
+    Starting Time/Date     = 18:50:13 / 2023.7.14
+    Ending Time/Date       = 18:50:13 / 2023.7.14
+    CPU Time = 0.17 Second (0 hr. 0 min 0.17 sec.)
 
 _________________________________________________________________________________________________
 Analysis is accomplished successfully

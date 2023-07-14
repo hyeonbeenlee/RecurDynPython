@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DOCUMENT>
+	<OBJECT keyword="RIGID_BODY" name="Professional" type="Body">
+		<ENTITIES>
+			<ENTITY name="Body1" type="BOOL">TRUE</ENTITY>
+		</ENTITIES>
+		<ARRAYPROPERTY arraysize="4">
+			<PROPERTY keyword="Position" type="BOOL">TRUE</PROPERTY>
+			<PROPERTY keyword="Velocity" type="BOOL">TRUE</PROPERTY>
+			<PROPERTY keyword="Acceleration" type="BOOL">TRUE</PROPERTY>
+			<PROPERTY keyword="Energy" type="BOOL">TRUE</PROPERTY>
+		</ARRAYPROPERTY>
+	</OBJECT>
+	<OBJECT keyword="ROTATIONAL_SPRING_FORCE_GROUP" name="Professional" type="Force">
+		<ENTITIES>
+			<ENTITY name="RotationalSpring1" type="BOOL">TRUE</ENTITY>
+		</ENTITIES>
+		<ARRAYPROPERTY arraysize="2">
+			<PROPERTY keyword="Applied Force" type="BOOL">TRUE</PROPERTY>
+			<PROPERTY keyword="Relative Angle" type="BOOL">TRUE</PROPERTY>
+		</ARRAYPROPERTY>
+	</OBJECT>
+	<OBJECT keyword="REVOLUTE_JOINT" name="Professional" type="Joint">
+		<ENTITIES>
+			<ENTITY name="RevJoint1" type="BOOL">TRUE</ENTITY>
+		</ENTITIES>
+		<ARRAYPROPERTY arraysize="6">
+			<PROPERTY keyword="Relative Position" type="BOOL">TRUE</PROPERTY>
+			<PROPERTY keyword="Relative Velocity" type="BOOL">TRUE</PROPERTY>
+			<PROPERTY keyword="Relative Acceleration" type="BOOL">TRUE</PROPERTY>
+			<PROPERTY keyword="Reaction Force" type="BOOL">TRUE</PROPERTY>
+			<PROPERTY keyword="Driving Force" type="BOOL">TRUE</PROPERTY>
+			<PROPERTY keyword="Friction Force" type="BOOL">TRUE</PROPERTY>
+		</ARRAYPROPERTY>
+	</OBJECT>
+	<OBJECT keyword="EXPRESSION_NAME" name="Professional" type="Expression">
+		<ENTITIES>
+			<ENTITY name="Ex1" type="BOOL">TRUE</ENTITY>
+		</ENTITIES>
+		<ARRAYPROPERTY arraysize="1">
+			<PROPERTY keyword="Value" type="BOOL">TRUE</PROPERTY>
+		</ARRAYPROPERTY>
+	</OBJECT>
+</DOCUMENT>

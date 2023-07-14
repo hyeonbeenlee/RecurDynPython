@@ -10,9 +10,9 @@ System Configuration Information
     No. of Generalized Velocity                     = 1
     No. of Rigid Body                               = 1
 
-Kinematic Degree of Freedom         = 1
+Kinematic Degree of Freedom         = 0
 
-Total array size                    = 2733
+Total array size                    = 2868
 Total memory size for array         = 0 MB
 
 Success Process: Array Structure Construction
@@ -24,7 +24,7 @@ Redundant Constraint Information
 _________________________________________________________________________________________________
 RecurDyn/SOLVER Information
     DLL type Solver for Windows 64 Bit
-    No. of CPU Thread = 4
+    No. of CPU Thread = 8
     Save Solver Animation File(RAN) Option is turned on
     C:\Program Files\FunctionBay, Inc\RecurDyn 2023\Bin\Solver\Slvcore.dll
     C:\Program Files\FunctionBay, Inc\RecurDyn 2023\Bin\Solver\Cuser.dll
@@ -41,7 +41,7 @@ Analysis Information
 
 _________________________________________________________________________________________________
 Information of starting time
-    Starting Time/Date     = 22:50:52 / 2023.6.12
+    Starting Time/Date     = 16:30:36 / 2023.7.14
 
 _________________________________________________________________________________________________
 Integrator Information
@@ -53,15 +53,15 @@ ________________________________________________________________________________
 Analysis processing...
 
         TIME          STEPSIZE        A_DELNRM          NJAC      NRES      ANRF     AINTF
-    6.133000E-03    5.120000E-04    4.474896E-08         100       300         0         0
-    8.500000E-01    1.000000E-02    1.707154E-03         200       600         0         0
-    1.000000E+00    1.000000E-02    3.026923E-03         215       645         0         0
+    6.133000E-03    5.120000E-04    0.000000E+00         100       300         0         0
+    8.500000E-01    1.000000E-02    0.000000E+00         200       600         0         0
+    1.000000E+00    1.000000E-02    0.000000E+00         215       645         0         0
 
 _________________________________________________________________________________________________
 Analysis Time Information
-    Starting Time/Date     = 22:50:52 / 2023.6.12
-    Ending Time/Date       = 22:50:52 / 2023.6.12
-    CPU Time = 0.1 Second (0 hr. 0 min 0.1 sec.)
+    Starting Time/Date     = 16:30:36 / 2023.7.14
+    Ending Time/Date       = 16:30:36 / 2023.7.14
+    CPU Time = 0.0 Second (0 hr. 0 min 0.0 sec.)
 
 _________________________________________________________________________________________________
 Analysis is accomplished successfully
