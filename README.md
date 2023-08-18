@@ -48,8 +48,8 @@ This method is **_parallelizable_**, but requires corresponding number of licens
 - `NumCPUCores: int` Number of CPU threads to use per simulation. Must be one of `[0(Auto),1,2,4,8,16]`
 - `EndTime: float` Simulation end time.
 - `NumSteps: int` Number of time steps.
-- `NumParallelBatches: int` Number of parallelized simulations (\*.bat) to create.
-- `NumBatRunsOnThisPC: int` Number of simulations to run on your current machine. Defaults to `NumParallelBatches`. Range should be within `0`~`NumParallelBatches`.
+- `NumParallelBatches: int` Number of parallelized runners (\*.bat) to create.
+- `NumBatRunsOnThisPC: int` Number of runners to run on your current machine. Defaults to `NumParallelBatches`. Range should be within `0`~`NumParallelBatches`.
 
 ```
 RunDOE_Batch(
