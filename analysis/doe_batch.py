@@ -46,7 +46,6 @@ def RunDOE_Batch(
         application.Settings.CoreNumber = NumCPUCores
     else:
         application.Settings.AutoCoreNumber = True
-    application, model_document, plot_document, model = initialize()
     application.ClearMessage()
     if NumBatRunsOnThisPC is None:
         NumBatRunsOnThisPC = NumParallelBatches
