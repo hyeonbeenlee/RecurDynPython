@@ -45,7 +45,6 @@ def RunDOE_GUI(
         application.Settings.CoreNumber = NumCPUCores
     else:
         application.Settings.AutoCoreNumber = True
-    application, model_document, plot_document, model = initialize()
     application.ClearMessage()
     AnalysisStartTime = time.perf_counter()
 
