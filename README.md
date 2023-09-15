@@ -19,8 +19,10 @@ This method is **_not parallelizable_**.
 #### Arguments
 
 - `ModelFileDir: str` Absolute path of model file (\*.rdyn).
-- `TopFolderName: str` Folder name to create.
-- `NumCPUCores: int` Number of CPU threads to use per simulation. Must be one of `[0(Auto),1,2,4,8,16]`
+- `TopFolderName: str` Folder name to create at `ModelFileDir`.
+  - Each of simulation results will be saved in this folder.
+- `NumCPUCores: int` Number of CPU threads to use per simulation.
+  - Must be one of `[0(Auto),1,2,4,8,16]`.
 - `EndTime: float` Simulation end time.
 - `NumSteps: int` Number of time steps.
 
@@ -35,22 +37,28 @@ RunDOE_GUI(
 ```
 
 # Simulate using batch solver
+> This method is far more stable and parallelizable compared to GUI solvers.  
+> It is highly recommended to run DOEs using batch solvers, especially you're handling large, complex model.
+
 ![batch_demo](https://github.com/hyeonbeenlee/RecurDynPython/assets/78078652/62b8ddea-f3a2-438a-a322-77b9e1c2b7ec)
 
 Call `analysis.doe_batch.RunDOE_Batch` with arguments.  
 **You can control DOE scenario by editing line 59~67 in [analysis/doe_batch.py](https://github.com/hyeonbeenlee/RecurDynPython/blob/main/analysis/doe_batch.py)**  
-This method is **_parallelizable_**, but requires corresponding number of licenses.
+This method is **_parallelizable_**, but consumes **corresponding number of RecurDyn licenses**.
 
 #### Arguments
 
 - `ModelFileDir: str` Absolute path of model file (\*.rdyn).
-- `TopFolderName: str` Folder name to create.
-- `NumCPUCores: int` Number of CPU threads to use per simulation. Must be one of `[0(Auto),1,2,4,8,16]`
+- `TopFolderName: str` Folder name to create at `ModelFileDir`.
+  - Each of simulation results will be saved in this folder.
+- `NumCPUCores: int` Number of CPU threads to use per simulation.
+  - Must be one of `[0(Auto),1,2,4,8,16]`.
 - `EndTime: float` Simulation end time.
 - `NumSteps: int` Number of time steps.
-- `NumParallelBatches: int` Number of parallelized runners (\*.bat) to create.
-- `NumBatRunsOnThisPC: int` Number of runners to run on your current machine. Defaults to `NumParallelBatches`. Range should be within `0`~`NumParallelBatches`.
-
+- `NumParallelBatches: int` Number of parallelized DOE runners (\*.bat) to create. 
+  - The total number of simulations of your DOE will be splited by ```NumParallelBatches```. For example, if you define DOE with 100 simulations and set this argument to `4`, `RunDOE_Batch` will configure `4` parallelized DOE runners with each of them containing 25 simulations.
+- `NumBatRunsOnThisPC: int` Number of runners to immediately execute on your current machine. Defaults to `NumParallelBatches`. Value should be within range of [`0`, `NumParallelBatches`].
+  - This argument is configured to run DOE on multiple machines. Comprehensively, if you set `NumParallelBatches` to 10 and set `NumBatRunsOnThisPC` to 3, only the first 3 runners (\*.bat) are executed immediately on current machine. You can transfer rest of the `7` runners with corresponding subfolders (which contains `*.rmd` and `*.rss` + $\alpha$ files) in `ModelFileDir` to other machines and execute them by hand. In this case, you need additional processing to modify RecurDyn solver path defined in runner files.
 ```
 RunDOE_Batch(
     ModelFileDir=f"{os.getcwd()}/SampleModel.rdyn",
@@ -64,8 +72,13 @@ RunDOE_Batch(
 
 #### Export data from results using `analysis.export_data.rplt2csv`
 
-Exported variables are defined in `GlobalVariables.GlobVar.DataExportTargets`.
+Numeric simulation results are stored in `*.rplt` format.  
+Exported variables are defined in `GlobalVariables.GlobVar.DataExportTargets`.  
+Variable names should be exactly the same to the ones in the `*.rplt`.  
+To explicitly check variable names, simply import `*.rplt` file on RecurDyn GUI.
 
 ```
 rplt2csv(f"{os.getcwd()}/TestDOE_Batch")
 ```
+
+The function will recursively scan for all `*.rplt` files in the argument directory, and export variables in `DataExportTargets` in `*.csv` format.
